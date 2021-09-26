@@ -1,5 +1,4 @@
 alembic==1.7.1
-apparmor
 appdirs==1.4.4
 application-utility==1.3.2
 attrs==21.2.0
