@@ -50,7 +50,6 @@ Markdown==3.3.4
 MarkupSafe==2.0.1
 more-itertools==8.10.0
 msgpack==1.0.2
-netsnmp-python==1.0a1
 npyscreen==4.10.5
 ordered-set==4.0.2
 packaging==20.9
