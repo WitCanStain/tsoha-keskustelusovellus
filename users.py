@@ -30,9 +30,10 @@ def user_register(role, username, password):
 
 def check_registration_validity(role, username, password):
     
-    if role not in ['user', 'admin']:
-        return False
+    # if role not in ['user', 'admin']:
+    #     return False
     sql = "SELECT * FROM users WHERE username=:username"
+    print("username:" + username)
     result = db.session.execute(sql, {"username": username})
     user = result.fetchone()
     if username == password:
