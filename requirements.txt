@@ -45,7 +45,6 @@ itsdangerous==2.0.1
 Jinja2==3.0.1
 keyutils==0.6
 ldap3==2.9
-LibAppArmor==3.0.3
 libtorrent===1.2.14-build-libtorrent-rasterbar-src-libtorrent-rasterbar-1.2.14-bindings-python
 louis==3.19.0
 Mako==1.1.5
