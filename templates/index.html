@@ -1,5 +1,10 @@
+{% extends "layout.html" %}
+{% block title %} Home {% endblock %}
+{% block content %}
 {% if session.username %}
 <p>You have logged in as {{ session.username }}</p>
+
+<a href="/create_thread">Create thread</a></br>
 <a href="/logout">Kirjaudu ulos</a>
 {% else %}
 <form action="/login" method="POST">
@@ -15,3 +20,14 @@
 <input type="submit" value="Register">
 </form>
 {% endif %}
+
+<ol>
+    {% for category in categories %}
+    <li><a href="/category/{{ category[0] }}">{{ category[1] }}</a></li>
+    {% endfor %}
+</ol>
+{% if session.role == "admin" %}
+<a href="/create_category">Create a new category.</a>
+{% endif %}
+
+{% endblock %}

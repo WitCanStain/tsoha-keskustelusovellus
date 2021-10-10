@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block title %} {{ category.name }} {% endblock %}
+{% block content %}
+<p>Here are the threads for {{ category.name }}!</p>
+<ol>
+{% for thread in category.threads %}
+<li><a href="/thread/{{ thread[0] }}">{{ thread[1] }}</a></li>
+{% endfor %}
+<a href="/create_thread">Create thread</a></br>
+</ol>
+{% endblock %}

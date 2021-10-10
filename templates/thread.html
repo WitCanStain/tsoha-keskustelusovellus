@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block title %} {{ thread.title }} {% endblock %}
+{% block content %}
+<a href="/category/{{ session.category_id }}">{{ session.category_name }}</a></br>
+
+<p>{{ thread.title }}</p>
+<ol>
+{% for message in thread.messages %}
+<li>
+    {% if edit_message == message.id %}
+    {{ message.username }}:
+    <form action="/update_message/{{ message.id }}" method="POST">
+        <textarea name="new_content" rows="{{ [message.content.count('\n'), 6] | max }}" cols="50">{{ message.content }}</textarea>
+        <input type="hidden" name="thread_id" value={{ thread.id }}>
+        <input type="submit" value="Edit message">
+    </form>
+    
+    {% else %}
+    {{ message.username }}: {{ message.content }}</br>
+    {% if session.user_id == message.user_id %}
+    <a href="/update_message/{{ message.id }}">Edit message</a>
+    {% endif %}
+    {% endif %}
+</li>
+{% endfor %}
+</ol>
+
+{% if session.username %}
+<form action="/create_message" method="POST">
+<p>Write your message here:<br>
+<textarea name="message" rows="6" cols="50"></textarea>
+<input type="hidden" name="thread_id" value={{ thread.id }}>
+<input type="submit" value="Post message">
+</form>
+{% endif %}
+{% endblock %}

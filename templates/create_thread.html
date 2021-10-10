@@ -1,0 +1,22 @@
+<form action="/create_thread" method="POST">
+<p>Give your thread a title:</br>
+<input type="text" name="title"></p>
+
+<p>What do you want to say?</br>
+<input type="text" name="message"></p>
+{% if session.category_id %}
+<p>Creating thread in <a href="/categories/{{ session.category_id }}">{{ session.category_name }}</a></p>
+<input type="hidden" name="category" value={{ session.category_id }}>
+{% else %}
+
+<p>Which category do you want to create your thread in?</p>
+<label for="category">Choose a category</label>
+<select name="category" id="category">
+    {% for category in categories %}
+    <option value="{{ category[0] }}">{{ category[1] }}</option>
+    {% endfor %}
+</select>
+{% endif %}
+</br>
+<input type="submit" value="Create thread">
+</form>
