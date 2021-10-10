@@ -15,4 +15,5 @@ Tämä tietokantasovellus-kurssin projekti on keskustelusovellus. Idea on saatu 
 Sovelluksen käyttäjätyyppeihin lukeutuvat peruskäyttäjä sekä ylläpitäjä. Mahdollisia kehitysideoita ovat mm. moderaattori-käyttäjä, jolla on oikeudet tietyille keskustelualueille mutta ei toisille, ilmoitustoiminto jolla käyttäjä saa ilmoituksen kun hänen tilaamaansa ketjuun tulee uusi viesti, sekä blokkaus-toiminto, jolla käyttäjä voi estää tietyn toisen käyttäjän viestien näkymisen itselleen.
 
 
-Tällä hetkellä projektissa on vain alkeellista käyttäjän luontia ja sisäänkirjautumista, sekä yksi taulu tietokannassa. Projektia on yritetty hajauttaa järkevästi eri osiin. Sitä voi testata painamalla 'Log in' ja 'Register' nappeja sovelluksen etusivulla.
+Tällä hetkellä projektissa on toteutettu erinäisiä keskusteluketjujen sekä -alueiden ja viestien käsittelyyn liittyvää toiminnallisuutta. Tämän lisäksi käyttäjiin kohdistuvia toimintoja on lisätty.
+Projektia voi testata [Herokussa](https://serene-beach-23157.herokuapp.com/)
