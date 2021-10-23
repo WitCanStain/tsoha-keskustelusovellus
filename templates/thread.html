@@ -3,7 +3,16 @@
 {% block content %}
 <a href="/category/{{ session.category_id }}">{{ session.category_name }}</a></br>
 
+{% if edit_thread %}
+<form action="/update_thread/{{ thread.id }}" method="POST">
+    <input type="text" name="new_title" value={{ thread.title }}></p>
+</form>
+{% else %}
 <p>{{ thread.title }}</p>
+{% if session.user_id == thread.messages[0].user_id %}
+    <a href="/update_thread/{{ thread.id }}">Edit thread</a>
+    {% endif %}
+{% endif %}
 <ol>
 {% for message in thread.messages %}
 <li>

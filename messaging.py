@@ -3,7 +3,7 @@ from flask import session, flash
 from time import time
 
 def create_thread(title, message, category_id):
-    print("Entered messaging:create_thread()")
+    print(f"Entered messaging:create_thread({title}, {message}, {category_id})")
     try:
         if message:
             user_id = session["user_id"]
@@ -22,9 +22,22 @@ def create_thread(title, message, category_id):
         flash("Thread creation failed.")
         print(e)
         return False
+
+def update_thread(thread_id, new_title):
+    print(f"Entered messaging:update_thread({thread_id}, {new_title}).")
+    try:
+        sql = "UPDATE threads SET title=:new_title WHERE id=:thread_id"
+        db.session.execute(sql, {"thread_id": thread_id, "new_title": new_title})
+        db.session.commit()
+        return True
+    except Exception as e:
+        flash("Updating thread failed.")
+        print(e)
+        return False
+
     
 def get_thread(thread_id):
-    print("Entered messaging:get_thread()")
+    print(f"Entered messaging:get_thread({thread_id}).")
     try:
         sql = "SELECT title FROM threads WHERE id=:thread_id"
         title = db.session.execute(sql, {"thread_id": thread_id}).fetchone()[0]
@@ -37,7 +50,7 @@ def get_thread(thread_id):
         return False
 
 def get_thread_id_from_message_id(message_id):
-    print("Entered messaging:get_thread_id_from_message_id().")
+    print(f"Entered messaging:get_thread_id_from_message_id({message_id}).")
     try:
         sql = "SELECT thread_id FROM messages WHERE id=:message_id"
         thread_id = db.session.execute(sql, {"message_id": message_id}).fetchone()[0]
@@ -47,7 +60,7 @@ def get_thread_id_from_message_id(message_id):
         return False
 
 def create_message(thread_id, user_id, content):
-    print("Entered messaging:create_message")
+    print(f"Entered messaging:create_message({thread_id}, {user_id}, {content}).")
     try:
         if content:
             sql = "INSERT INTO messages (content, thread_id, user_id) VALUES (:content, :thread_id, :user_id) RETURNING id"
@@ -63,18 +76,22 @@ def create_message(thread_id, user_id, content):
         return False
 
 def update_message(message_id, new_content):
-    print("Entered messaging:update_message")
+    print(f"Entered messaging:update_message({message_id}, {new_content}).")
     try:
+        if not new_content:
+            flash("Cannot create an empty message.")
+            return False
         sql = "UPDATE messages SET content=:new_content WHERE id=:message_id"
         db.session.execute(sql, {"new_content": new_content, "message_id": message_id})
         db.session.commit()
         return True
     except Exception as e:
+        flash("Updating message failed.")
         print(e)
         return False
 
 def message_is_owned_by_user(message_id, user_id):
-    print("Entered messaging:message_is_owned_by_user().")
+    print(f"Entered messaging:message_is_owned_by_user({message_id}, {user_id}).")
     try:
         sql = "SELECT id FROM messages WHERE user_id=:user_id"
         id = db.session.execute(sql, {"user_id": user_id}).fetchone()[0]
@@ -87,18 +104,23 @@ def message_is_owned_by_user(message_id, user_id):
         return False
 
 def create_category(category_name):
-    print("Entered messaging:create_category().")
+    print(f"Entered messaging:create_category({category_name}).")
     try:
+        if not category_name:
+            flash("Category creation failed. Did you provide a name for the category?")
+            return False
+
         sql = "INSERT INTO categories(name) VALUES (:name) RETURNING id"
         category_id = db.session.execute(sql, {"name": category_name}).fetchone()[0]
         db.session.commit()
         return category_id
     except Exception as e:
+        flash("Category creation failed.")
         print(e)
         return False
 
 def get_categories():
-    print("Entered messaging:get_categories()")
+    print("Entered messaging:get_categories().")
     try:
         sql = """
         SELECT categories.id, categories.name, COUNT(DISTINCT threads.id), COUNT(messages.id), MAX(messages.created)
@@ -116,7 +138,7 @@ def get_categories():
         return False
 
 def get_category(category_id):
-    print("Entered messaging:get_category()")
+    print(f"Entered messaging:get_category({category_id}).")
     try:
         sql = "SELECT id, title FROM threads WHERE category_id=:category_id"
         threads = db.session.execute(sql, {"category_id": category_id}).fetchall()
