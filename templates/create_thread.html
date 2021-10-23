@@ -1,3 +1,6 @@
+{% extends "layout.html" %}
+{% block title %} Create a new thread {% endblock %}
+{% block content %}
 <form action="/create_thread" method="POST">
 <p>Give your thread a title:</br>
 <input type="text" name="title"></p>
@@ -20,3 +23,4 @@
 </br>
 <input type="submit" value="Create thread">
 </form>
+{% endblock %}

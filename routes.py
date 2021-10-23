@@ -1,5 +1,6 @@
 from app import app
-from flask import redirect, render_template, request, session
+from flask import redirect, render_template, request, session, flash
+from messaging import get_categories
 
 @app.route("/")
 def index():
@@ -50,9 +51,8 @@ def create_thread():
             print(f"Thread creation by {session['username']} successful.")
             return redirect(f"/thread/{thread_id}")
         else:
-            return "Thread creation failed."
+            return redirect("/create_thread")
     elif request.method == "GET":
-        from messaging import get_categories
         categories = get_categories()
         return render_template("create_thread.html", categories=categories)
 
@@ -62,10 +62,11 @@ def create_message():
     message = request.form["message"]
     thread_id = request.form["thread_id"]
     user_id = session["user_id"]
-    if create_message(thread_id, user_id, message):
-        return redirect(f"/thread/{thread_id}")
-    else:
-        return "Message could not be sent."
+    return redirect(f"/thread/{thread_id}")
+    # if create_message(thread_id, user_id, message):
+        
+    # else:
+    #     return "Message could not be sent."
 
 @app.route("/create_category", methods=["POST", "GET"])
 def create_category():

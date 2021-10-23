@@ -23,7 +23,12 @@
 
 <ol>
     {% for category in categories %}
-    <li><a href="/category/{{ category[0] }}">{{ category[1] }}</a></li>
+    <li><a href="/category/{{ category[0] }}">{{ category[1] }}</a>
+        <p>Threads: {{ category[2] }}</p>
+        <p>Messages: {{ category[3] }}</p>
+        <p>Last message: {{ category[4] }}</p>
+    </li>
+
     {% endfor %}
 </ol>
 {% if session.role == "admin" %}
