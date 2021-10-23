@@ -149,3 +149,14 @@ def get_category(category_id):
     except Exception as e:
         print(e)
         return False
+
+def search(search_query):
+    print(f"Entered messaging:search({search_query}).")
+    try:
+        sql = "SELECT messages.id, messages.content, messages.thread_id, messages.created, users.username, threads.title FROM messages LEFT JOIN users ON messages.user_id=users.id LEFT JOIN threads ON messages.thread_id=threads.id WHERE content LIKE :search_query"
+        results = db.session.execute(sql, {"search_query": f"%{search_query}%"}).fetchall()
+        print(results)
+        return results
+    except Exception as e:
+        print(e)
+        return False

@@ -9,7 +9,10 @@
     </ul>
   {% endif %}
 {% endwith %}
-<a href="/">Etusivu</a>
+<a href="/">Etusivu</a> 
+<form action="/search" method="POST">
+    <input type="text" name="search_query" placeholder="Search"></p>
+</form>
 <hr>
 {% block content %}{% endblock %}
 <hr>

@@ -119,6 +119,12 @@ def category(id):
     else:
         return redirect("/404")
 
+@app.route("/search", methods=["POST"])
+def search():
+    search_query = request.form["search_query"]
+    search_results = messaging.search(search_query)
+    return render_template("search_results.html", search_results=search_results)
 @app.route("/404", methods=["GET"])
 def not_found():
     return "404: not found."
+
