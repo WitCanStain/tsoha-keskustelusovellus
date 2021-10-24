@@ -1,11 +1,13 @@
 from db import db
 from flask import session, flash, escape
 from time import time
+import traceback
 
 def create_thread(title, message, category_id):
-    print(f"Entered messaging:create_thread({title}, {message}, {category_id})")
+    print(f"Entered messaging:create_thread({title}, {message}, {category_id}).")
     try:
         if message:
+            title = escape(title)
             user_id = session["user_id"]
             created = time()
             sql = "INSERT INTO threads (title, category_id, created_by) VALUES (:title, :category_id, :created_by) RETURNING id"
@@ -20,19 +22,24 @@ def create_thread(title, message, category_id):
             return False
     except Exception as e:
         flash("Thread creation failed.")
-        print(e)
+        traceback.print_exc()
         return False
 
-def update_thread(thread_id, new_title):
-    print(f"Entered messaging:update_thread({thread_id}, {new_title}).")
+def update_thread(thread_id, title):
+    print(f"Entered messaging:update_thread({thread_id}, {title}).")
     try:
-        sql = "UPDATE threads SET title=:new_title WHERE id=:thread_id"
-        db.session.execute(sql, {"thread_id": thread_id, "new_title": new_title})
+        if not title:
+            flash("Cannot create empty thread title.")
+            return False
+        title = escape(title)
+        sql = "UPDATE threads SET title=:title WHERE id=:thread_id"
+        db.session.execute(sql, {"thread_id": thread_id, "title": title})
         db.session.commit()
         return True
+            
     except Exception as e:
         flash("Updating thread failed.")
-        print(e)
+        traceback.print_exc()
         return False
 
     
@@ -47,7 +54,7 @@ def get_thread(thread_id):
         
         return {"id":thread_id, "title": title, "messages": messages}
     except Exception as e:
-        print(e)
+        traceback.print_exc()
         return False
 
 def get_thread_id_from_message_id(message_id):
@@ -57,24 +64,23 @@ def get_thread_id_from_message_id(message_id):
         thread_id = db.session.execute(sql, {"message_id": message_id}).fetchone()[0]
         return thread_id
     except Exception as e:
-        print(e)
+        traceback.print_exc()
         return False
 
 def create_message(thread_id, user_id, content):
     print(f"Entered messaging:create_message({thread_id}, {user_id}, {content}).")
     try:
-        if content:
-            content = escape(content) # sanitize input
-            print(f"escaped message: {content}")
-            sql = "INSERT INTO messages (content, thread_id, user_id) VALUES (:content, :thread_id, :user_id) RETURNING id"
-            message_id = db.session.execute(sql, {"content": content, "thread_id": thread_id, "user_id": user_id}).fetchone()[0]
-            db.session.commit()
-            return message_id
-        else:
+        if not content:
             flash("You cannot create an empty message.")
             return False
+        content = escape(content) # sanitize input
+        print(f"escaped message: {content}")
+        sql = "INSERT INTO messages (content, thread_id, user_id) VALUES (:content, :thread_id, :user_id) RETURNING id"
+        message_id = db.session.execute(sql, {"content": content, "thread_id": thread_id, "user_id": user_id}).fetchone()[0]
+        db.session.commit()
+        return message_id            
     except Exception as e:
-        print(e)
+        traceback.print_exc()
         flash("Message creation failed.")
         return False
 
@@ -84,13 +90,14 @@ def update_message(message_id, new_content):
         if not new_content:
             flash("Cannot create an empty message.")
             return False
+        new_content = escape(new_content)
         sql = "UPDATE messages SET content=:new_content WHERE id=:message_id"
         db.session.execute(sql, {"new_content": new_content, "message_id": message_id})
         db.session.commit()
         return True
     except Exception as e:
         flash("Updating message failed.")
-        print(e)
+        traceback.print_exc()
         return False
 
 def message_is_owned_by_user(message_id, user_id):
@@ -103,7 +110,7 @@ def message_is_owned_by_user(message_id, user_id):
         else:
             return False
     except Exception as e:
-        print(e)
+        traceback.print_exc()
         return False
 
 def create_category(category_name):
@@ -119,7 +126,7 @@ def create_category(category_name):
         return category_id
     except Exception as e:
         flash("Category creation failed.")
-        print(e)
+        traceback.print_exc()
         return False
 
 def get_categories():
@@ -137,7 +144,7 @@ def get_categories():
         categories = db.session.execute(sql).fetchall()
         return categories
     except Exception as e:
-        print(e)
+        traceback.print_exc()
         return False
 
 def get_category(category_id):
@@ -150,16 +157,20 @@ def get_category(category_id):
         return {"name": category_name, "threads": threads}
         
     except Exception as e:
-        print(e)
+        traceback.print_exc()
         return False
 
 def search(search_query):
     print(f"Entered messaging:search({search_query}).")
     try:
-        sql = "SELECT messages.id, messages.content, messages.thread_id, messages.created, users.username, threads.title FROM messages LEFT JOIN users ON messages.user_id=users.id LEFT JOIN threads ON messages.thread_id=threads.id WHERE content LIKE :search_query"
+        sql = """
+        SELECT messages.id, messages.content, messages.thread_id, messages.created, users.username, threads.title 
+        FROM messages LEFT JOIN users ON messages.user_id=users.id 
+        LEFT JOIN threads ON messages.thread_id=threads.id 
+        WHERE content LIKE :search_query"""
         results = db.session.execute(sql, {"search_query": f"%{search_query}%"}).fetchall()
         print(results)
         return results
     except Exception as e:
-        print(e)
+        traceback.print_exc()
         return False

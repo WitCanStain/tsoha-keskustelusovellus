@@ -1,6 +1,6 @@
 from app import app
-from flask import redirect, render_template, request, session, flash
-from users import user_register, login
+from flask import redirect, render_template, request, session, flash, abort
+import users
 import messaging
 @app.route("/")
 def index():
@@ -11,7 +11,7 @@ def index():
 def login():
     username = request.form["username"]
     password = request.form["password"]
-    user_id = login(username, password)
+    user_id = users.login(username, password)
     if user_id:
         session["username"] = username
         session["user_id"] = user_id
@@ -29,10 +29,10 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
         role = request.form["role"]
-        if  user_register(role, username, password):
+        if  users.user_register(role, username, password):
             return redirect("/")
         else:
-            return "Registration failed."
+            return redirect("/register")
     elif request.method == "GET":
         return render_template("register.html")    
 
@@ -94,6 +94,7 @@ def thread(id):
     edit_thread = int(request.args.get('editthread', None)) if request.args.get('editthread', None) else None
     message_id = int(request.args.get('message', None)) if request.args.get('message', None) else None
     thread = messaging.get_thread(id)
+    
     if thread:
         return render_template("thread.html", thread=thread, edit_message=edit_message, edit_thread=edit_thread, message_id=message_id)
     else:
@@ -118,14 +119,20 @@ def category(id):
         session["category_name"] = category["name"]
         return render_template("category.html", category=category)
     else:
-        return redirect("/404")
+        abort(404, description="Resource not found")
+        
 
 @app.route("/search", methods=["POST"])
 def search():
     search_query = request.form["search_query"]
     search_results = messaging.search(search_query)
     return render_template("search_results.html", search_results=search_results)
+
 @app.route("/404", methods=["GET"])
 def not_found():
     return "404: not found."
 
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
