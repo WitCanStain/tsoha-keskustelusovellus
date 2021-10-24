@@ -7,14 +7,15 @@
 <ol>
 
 
-{% for search_result in search_results %}
+    {% for search_result in search_results %}
 
-<li>
-    <p>{{ search_result.username }} wrote on {{ search_result.created }}:</p>
-    <p>{{ search_result.content }}</p>
-    <p>In thread <a href="/thread/{{ search_result.thread_id }}#{{ search_result.id }}">{{ search_result.title }}.</a> </p>
-</li>
-{% endfor %}
+    <li>
+        <p>{{ search_result.username }} wrote on {{ search_result.created }}:</p>
+        <p>{{ search_result.content }}</p>
+        <p>In thread <a href="/thread/{{ search_result.thread_id }}#{{ search_result.id }}">{{ search_result.title
+                }}.</a> </p>
+    </li>
+    {% endfor %}
 
 </ol>
 

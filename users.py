@@ -63,9 +63,9 @@ def check_registration_validity(role, username, password):
         elif len(password) < 3 or len(username) < 3:
             flash("Username and password must be at least 3 characters.")
             return False
-        for char in username.lower() + password.lower():
+        for char in username.lower():
             if char not in allowed_chars:
-                flash("Please ensure that your username and password contain only letters A-ö and integers.")
+                flash("Please ensure that your username contains only letters A-ö and integers.")
                 return False
 
         sql = "SELECT * FROM users WHERE username=:username"

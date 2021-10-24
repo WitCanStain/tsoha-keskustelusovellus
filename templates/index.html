@@ -4,9 +4,10 @@
 {% if session.username %}
 <p>You have logged in as {{ session.username }}</p>
 
-<form action="/create_thread" method="GET"><input class="btn btn-outline-primary btn-sm" type="submit" value="Create thread"></form>
+<form action="/create_thread" method="GET"><input class="btn btn-outline-primary btn-sm" type="submit"
+        value="Create thread"></form>
 <form action="/logout" method="POST"><input class="btn btn-outline-primary btn-sm" type="submit" value="Log out"></form>
- 
+
 {% endif %}
 
 <ol>
@@ -16,7 +17,9 @@
         <p>Messages: {{ category.msg_count }}</p>
         <p>Last message: {{ category.last_msg_time }}</p>
         {% if session.role == "admin" %}
-        <form action="/remove_category/{{ category.id }}" method="POST"><input class="btn btn-outline-primary btn-sm" type="submit" value="Remove category"><input class="btn btn-outline-primary btn-sm" type="hidden" name="csrf_token" value="{{ session.csrf_token }}"></form>
+        <form action="/remove_category/{{ category.id }}" method="POST"><input class="btn btn-outline-primary btn-sm"
+                type="submit" value="Remove category"><input class="btn btn-outline-primary btn-sm" type="hidden"
+                name="csrf_token" value="{{ session.csrf_token }}"></form>
         {% endif %}
     </li>
 
