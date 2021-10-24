@@ -21,7 +21,7 @@ def login(username, password):
         else:
             flash("Username or password is incorrect.")
             return False
-    except Exception as e:
+    except:
         traceback.print_exc()
         flash("Login failed.") 
 
@@ -43,33 +43,48 @@ def user_register(role, username, password):
             print("User registration could not be validified.")
             flash("User registration could not be validified.")
             return False
-    except Exception as e:
+    except:
         traceback.print_exc()
         flash("user registration failed.")
     
 
 def check_registration_validity(role, username, password):
     print(f"Entered users:check_registration_validity({role}, {username}, {password}).")
-    # if role not in ['user', 'admin']:
-    #     return False
-    for char in username.lower() + password.lower():
-        if char not in allowed_chars:
-            flash("Please ensure that your username and password contain only letters A-ö and integers.")
+    try:
+        if role not in ['user', 'admin']:
+            flash("Invalid user type.")
             return False
-    sql = "SELECT * FROM users WHERE username=:username"
-    user = db.session.execute(sql, {"username": username}).fetchone()
-    
-    if username == password:
-        print("Username and password cannot be the same.")
-        flash("Username and password cannot be the same.")
-        return False
-    elif user:
-        print("User already exists.")
-        flash("User already exists.")
-        return False
-    else:
-        print("Registration information is valid")
-        return True
-    
+        elif len(password) < 3 or len(username) < 3:
+            flash("Username and password must be at least 3 characters.")
+            return False
+        for char in username.lower() + password.lower():
+            if char not in allowed_chars:
+                flash("Please ensure that your username and password contain only letters A-ö and integers.")
+                return False
 
-    
+        sql = "SELECT * FROM users WHERE username=:username"
+        user = db.session.execute(sql, {"username": username}).fetchone()
+        if username == password:
+            print("Username and password cannot be the same.")
+            flash("Username and password cannot be the same.")
+            return False
+        elif user:
+            print("User already exists.")
+            flash("User already exists.")
+            return False
+        else:
+            print("Registration information is valid")
+            return True
+    except:
+        traceback.print_exc()
+        return False
+
+def get_users():
+    print(f"Entered used:get_users().")
+    try:
+        sql = "SELECT id, username FROM users WHERE visible=true"
+        users = db.session.execute(sql).fetchall()
+        return users
+    except:
+        traceback.print_exc()
+        return False

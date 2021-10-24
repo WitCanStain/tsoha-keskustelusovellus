@@ -12,6 +12,7 @@
 <p>{{ thread.title }}</p>
 {% if session.user_id == thread.messages[0].user_id %}
     <a href="/update_thread/{{ thread.id }}">Edit thread</a>
+    <a href="/remove_thread/{{ thread.id }}">Remove thread</a>
     {% endif %}
 {% endif %}
 <ol>
@@ -30,6 +31,7 @@
     {{ message.username }}:</br> {{ message.content | replace("\r", "</br>") | safe }}</br>
     {% if session.user_id == message.user_id %}
     <a href="/update_message/{{ message.id }}">Edit message</a>
+    <a href="/remove_message/{{ message.id }}">Remove message</a>
     {% endif %}
     {% endif %}
 </li>

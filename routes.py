@@ -1,10 +1,12 @@
 from app import app
 from flask import redirect, render_template, request, session, flash, abort
 import users
+from users import get_users # users.get_users bugs out, no idea why
 import messaging
 @app.route("/")
 def index():
     categories = messaging.get_categories()
+    print(session["role"])
     return render_template("index.html", categories=categories)
 
 @app.route("/login",methods=["POST"])
@@ -57,17 +59,28 @@ def create_message():
     message = request.form["message"]
     thread_id = request.form["thread_id"]
     user_id = session["user_id"]
-    messaging.create_message(thread_id, user_id, message)
+    if not message:
+        flash("You cannot create an empty message.")
+    else:
+        result = messaging.create_message(thread_id, user_id, message)
+        if not result:
+            flash("Message creation failed.")
     return redirect(f"/thread/{thread_id}")
 
 
 @app.route("/create_category", methods=["POST", "GET"])
 def create_category():
+    if not session["role"] == "admin":
+        abort(401, description="Unauthorized request.")
     if request.method == "GET":
-        return render_template("create_category.html")
+        user_list = get_users()
+        
+        return render_template("create_category.html", users=user_list)
     elif request.method == "POST":
         category_name = request.form["name"]
-        category_id = messaging.create_category(category_name)
+        users = request.form.getlist("users")
+        category_id = messaging.create_category(category_name, users)
+        
         if category_id:
             return redirect(f"/category/{category_id}")
         else:
@@ -86,7 +99,16 @@ def update_message(id):
             if thread_id:
                 return redirect(f"/thread/{thread_id}?edit={id}")
             else:
-                return redirect("/404")
+                abort(404, description="Resource not found")
+
+@app.route("/remove_message/<int:id>", methods=["POST", "GET"])
+def remove_message(id):
+    thread_id = messaging.remove_message(id)
+    if thread_id:
+        return redirect(f"/thread/{thread_id}")
+    else:
+        return redirect("/")
+
 
 @app.route("/thread/<id>", methods=["GET"])
 def thread(id):
@@ -111,6 +133,15 @@ def update_thread(id):
         else:
             return redirect(f"/update_thread/{id}")
 
+@app.route("/remove_thread/<int:id>", methods=["POST", "GET"])
+def remove_thread(id):
+    category_id = messaging.remove_thread(id)
+    if category_id:
+        return redirect(f"/category/{category_id}")
+    else:
+        flash("Removing thread failed.")
+        return redirect("/")
+
 @app.route("/category/<int:id>", methods=["GET"])
 def category(id):
     category = messaging.get_category(id)
@@ -121,18 +152,24 @@ def category(id):
     else:
         abort(404, description="Resource not found")
         
+@app.route("/remove_category/<int:id>", methods=["POST"])
+def remove_category(id):
+    result = messaging.remove_category(id)
+    if not result:
+        flash("Removing category failed.")
+    return redirect("/")
 
 @app.route("/search", methods=["POST"])
 def search():
     search_query = request.form["search_query"]
     search_results = messaging.search(search_query)
     return render_template("search_results.html", search_results=search_results)
-
-@app.route("/404", methods=["GET"])
-def not_found():
-    return "404: not found."
-
+    
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
+
+@app.errorhandler(401)
+def unauthorized(e):
+    return render_template('401.html'), 401

@@ -23,10 +23,13 @@
 
 <ol>
     {% for category in categories %}
-    <li><a href="/category/{{ category[0] }}">{{ category[1] }}</a>
-        <p>Threads: {{ category[2] }}</p>
-        <p>Messages: {{ category[3] }}</p>
-        <p>Last message: {{ category[4] }}</p>
+    <li><a href="/category/{{ category.id }}">{{ category.name }}</a>
+        <p>Threads: {{ category.thread_count }}</p>
+        <p>Messages: {{ category.msg_count }}</p>
+        <p>Last message: {{ category.last_msg_time }}</p>
+        {% if session.role == "admin" %}
+        <form action="/remove_category/{{ category.id }}" method="POST"><input type="submit" value="Remove category"></form>
+        {% endif %}
     </li>
 
     {% endfor %}
