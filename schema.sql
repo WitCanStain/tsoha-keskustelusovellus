@@ -43,7 +43,9 @@ CREATE TABLE public.categories (
     id integer NOT NULL,
     name text NOT NULL,
     created timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+    updated timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    visible boolean DEFAULT true,
+    whitelist integer[]
 );
 
 
@@ -73,11 +75,12 @@ ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
 
 CREATE TABLE public.messages (
     id integer NOT NULL,
-    content text,
+    content text NOT NULL,
     thread_id integer,
     user_id integer,
     created timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+    updated timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    visible boolean DEFAULT true
 );
 
 
