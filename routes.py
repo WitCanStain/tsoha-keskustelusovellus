@@ -46,6 +46,9 @@ def create_thread():
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
         title = request.form["title"]
+        if len(title) > 256:
+            flash("Title is too long! Maximum length is 256 characters.")
+            return redirect("/create_thread")
         message = request.form["message"]
         category_id = request.form["category"]
         thread_id = messaging.create_thread(title, message, category_id)
@@ -55,7 +58,7 @@ def create_thread():
         else:
             return redirect("/create_thread")
     elif request.method == "GET":
-        category_id = int(request.args.get('category', None)) if request.args.get('category', None) else None
+        category_id = int(request.args.get("category", None)) if request.args.get("category", None) else None
         categories = None
         if not category_id:
             categories = messaging.get_categories()
@@ -73,6 +76,8 @@ def create_message():
     user_id = session["user_id"]
     if not message:
         flash("You cannot create an empty message.")
+    elif len(message) > 5000:
+        flash("Message is too long! Maximum character count is 5000.")
     else:
         result = messaging.create_message(thread_id, user_id, message)
         if not result:
@@ -91,6 +96,9 @@ def create_category():
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
         category_name = request.form["name"]
+        if len(category_name) > 256:
+            flash("Category name is too long! Maximum length is 256 characters.")
+            return redirect("/create_category")
         users = request.form.getlist("users")
         category_id = messaging.create_category(category_name, users)
         
@@ -108,6 +116,9 @@ def update_message(id):
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
         new_content = request.form["new_content"]
+        if len(new_content) > 5000:
+            flash("Message is too long! Maximum character count is 5000.")
+            return redirect("/")
         thread_id = request.form["thread_id"]
         messaging.update_message(id, new_content)
         return redirect(f"/thread/{thread_id}")
@@ -134,9 +145,9 @@ def remove_message(id):
 
 @app.route("/thread/<id>", methods=["GET"])
 def thread(id):
-    edit_message = int(request.args.get('edit', None)) if request.args.get('edit', None) else None
-    edit_thread = int(request.args.get('editthread', None)) if request.args.get('editthread', None) else None
-    message_id = int(request.args.get('message', None)) if request.args.get('message', None) else None
+    edit_message = int(request.args.get("edit", None)) if request.args.get("edit", None) else None
+    edit_thread = int(request.args.get("editthread", None)) if request.args.get("editthread", None) else None
+    message_id = int(request.args.get("message", None)) if request.args.get("message", None) else None
     thread = messaging.get_thread(id)
     
     if thread:
@@ -155,10 +166,11 @@ def update_thread(id):
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
         new_title = request.form["new_title"]
-        if messaging.update_thread(id, new_title):
+        if len(new_title) > 256:
+            flash("Title is too long! Maximum length is 256 characters.")
+        elif messaging.update_thread(id, new_title):
             return redirect(f"/thread/{id}")
-        else:
-            return redirect(f"/update_thread/{id}")
+        return redirect(f"/update_thread/{id}")
 
 @app.route("/remove_thread/<int:id>", methods=["POST"])
 def remove_thread(id):
@@ -197,12 +209,12 @@ def search():
 
 @app.errorhandler(401)
 def unauthorized(e):
-    return render_template('401.html'), 401
+    return render_template("401.html"), 401
 
 @app.errorhandler(403)
 def unauthorized(e):
-    return render_template('403.html'), 403
+    return render_template("403.html"), 403
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html'), 404
+    return render_template("404.html"), 404

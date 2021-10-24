@@ -4,7 +4,7 @@ from flask import session, flash
 import traceback
 import secrets
 from string import ascii_lowercase
-allowed_chars = ascii_lowercase + 'åäö0123456789'
+allowed_chars = ascii_lowercase + "åäö0123456789"
 
 def login(username, password):
     print(f"Entered users:login({username}, {password}).")
@@ -57,7 +57,7 @@ def user_register(role, username, password):
 def check_registration_validity(role, username, password):
     print(f"Entered users:check_registration_validity({role}, {username}, {password}).")
     try:
-        if role not in ['user', 'admin']:
+        if role not in ["user", "admin"]:
             flash("Invalid user type.")
             return False
         elif len(password) < 3 or len(username) < 3:
