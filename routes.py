@@ -1,7 +1,7 @@
 from app import app
 from flask import redirect, render_template, request, session, flash, abort
 import users
-from users import get_users # users.get_users bugs out, no idea why
+from users import get_users # users.get_users() bugs out, no idea why
 import messaging
 @app.route("/")
 def index():
@@ -74,7 +74,7 @@ def create_message():
 @app.route("/create_category", methods=["POST", "GET"])
 def create_category():
     if not session["role"] == "admin":
-        abort(401, description="Unauthorized request.")
+        abort(403)
     if request.method == "GET":
         user_list = get_users()
         return render_template("create_category.html", users=user_list)
@@ -92,23 +92,28 @@ def create_category():
 
 @app.route("/update_message/<int:id>", methods=["POST", "GET"])
 def update_message(id):
-    if (messaging.message_is_owned_by_user(id, session["user_id"])):
-        if request.method == "POST":
-            if session["csrf_token"] != request.form["csrf_token"]:
-                abort(403)
-            new_content = request.form["new_content"]
-            thread_id = request.form["thread_id"]
-            messaging.update_message(id, new_content)
-            return redirect(f"/thread/{thread_id}")
-        elif request.method == "GET":
-            thread_id = messaging.get_thread_id_from_message_id(id)
-            if thread_id:
-                return redirect(f"/thread/{thread_id}?edit={id}")
-            else:
-                abort(404, description="Resource not found")
+    if not (messaging.message_is_owned_by_user(id, session["user_id"])):
+        flash("You cannot edit messages that are not yours")
+        return redirect("/")
+    if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
+        new_content = request.form["new_content"]
+        thread_id = request.form["thread_id"]
+        messaging.update_message(id, new_content)
+        return redirect(f"/thread/{thread_id}")
+    elif request.method == "GET":
+        thread_id = messaging.get_thread_id_from_message_id(id)
+        if thread_id:
+            return redirect(f"/thread/{thread_id}?edit={id}")
+        else:
+            abort(404, description="Resource not found")
 
 @app.route("/remove_message/<int:id>", methods=["POST", "GET"])
 def remove_message(id):
+    if not (messaging.message_is_owned_by_user(id, session["user_id"])):
+        flash("You cannot delete messages that are not yours.")
+        return redirect("/")
     thread_id = messaging.remove_message(id)
     if thread_id:
         return redirect(f"/thread/{thread_id}")
@@ -130,6 +135,9 @@ def thread(id):
 
 @app.route("/update_thread/<int:id>", methods=["POST", "GET"])
 def update_thread(id):
+    if not messaging.user_owns_thread(id, session["user_id"]):
+        flash("You are not the owner of this thread.")
+        abort(403)
     if request.method == "GET":
         return redirect(f"/thread/{id}?editthread={id}")
     elif request.method == "POST":
@@ -143,6 +151,9 @@ def update_thread(id):
 
 @app.route("/remove_thread/<int:id>", methods=["POST"])
 def remove_thread(id):
+    if not messaging.user_owns_thread(id, session["user_id"]):
+        flash("You are not the owner of this thread.")
+        return redirect("/")
     category_id = messaging.remove_thread(id)
     if category_id:
         return redirect(f"/category/{category_id}")
@@ -162,7 +173,7 @@ def category(id):
         
 @app.route("/remove_category/<int:id>", methods=["POST"])
 def remove_category(id):
-    if session["csrf_token"] != request.form["csrf_token"]:
+    if session["csrf_token"] != request.form["csrf_token"] or session["role"] != "admin":
             abort(403)
     result = messaging.remove_category(id)
     if not result:
@@ -174,12 +185,15 @@ def search():
     search_query = request.form["search_query"]
     search_results = messaging.search(search_query)
     return render_template("search_results.html", search_results=search_results)
-    
-
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
 
 @app.errorhandler(401)
 def unauthorized(e):
     return render_template('401.html'), 401
+
+@app.errorhandler(403)
+def unauthorized(e):
+    return render_template('403.html'), 403
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404

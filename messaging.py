@@ -179,7 +179,7 @@ def get_categories():
 def get_category(category_id):
     print(f"Entered messaging:get_category({category_id}).")
     try:
-        if not check_category_access(category_id, session["user_id"]):
+        if not user_has_category_access(category_id, session["user_id"]):
             print("User does not have access to this category.")
             return False
         sql = "SELECT id, title FROM threads WHERE category_id=:category_id AND visible=true"
@@ -208,8 +208,8 @@ def remove_category(category_id):
         traceback.print_exc()
         return False
 
-def check_category_access(category_id, user_id):
-    print(f"Entered messaging:check_category_access({category_id}, {user_id}).")
+def user_has_category_access(category_id, user_id):
+    print(f"Entered messaging:user_has_category_access({category_id}, {user_id}).")
     try:
         sql = "SELECT id FROM categories WHERE id=:category_id AND (:user_id=ANY(whitelist) OR whitelist IS NULL)"
         result = db.session.execute(sql, {"category_id": category_id, "user_id": user_id}).fetchone()
@@ -222,6 +222,21 @@ def check_category_access(category_id, user_id):
     except:
         traceback.print_exc()
         return False
+
+def user_owns_thread(thread_id, user_id):
+    print(f"Entered messaging:user_owns_thread({thread_id}, {user_id}).")
+    try:
+        sql = "SELECT user_id FROM messages WHERE thread_id=:thread_id ORDER BY id ASC LIMIT 1"
+        result = db.session.execute(sql, {"thread_id": thread_id}).fetchone()
+        if result["user_id"] == user_id:
+            return True
+        else:
+            return False
+            
+    except:
+        traceback.print_exc()
+        return False
+
 
 def search(search_query):
     print(f"Entered messaging:search({search_query}).")
