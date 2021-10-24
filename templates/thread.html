@@ -10,7 +10,8 @@
     <input class="btn btn-outline-primary btn-sm" type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 {% else %}
-<p>{{ thread.title }}</p>
+<b>{{ thread.title }}</b></br></br>
+
 {% if session.user_id == thread.messages[0].user_id %}
     
     <form action="/update_thread/{{ thread.id }}" method="GET"><input class="btn btn-outline-primary btn-sm" type="submit" value="Edit thread"><input class="btn btn-outline-primary btn-sm" type="hidden" name="csrf_token" value="{{ session.csrf_token }}"> </form>

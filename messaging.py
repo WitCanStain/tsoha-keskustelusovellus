@@ -267,7 +267,7 @@ def search(search_query):
         SELECT messages.id, messages.content, messages.thread_id, SUBSTR(messages.created::TEXT, 1, 19) AS created, users.username, threads.title 
         FROM messages LEFT JOIN users ON messages.user_id=users.id 
         LEFT JOIN threads ON messages.thread_id=threads.id 
-        WHERE content LIKE :search_query"""
+        WHERE content LIKE :search_query AND messages.visible=true"""
         results = db.session.execute(sql, {"search_query": f"%{search_query}%"}).fetchall()
         print(results)
         return results

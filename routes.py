@@ -38,6 +38,9 @@ def register():
 
 @app.route("/create_thread", methods=["POST", "GET"])
 def create_thread():
+    if "user_id" not in session:
+        flash(("Cannot create threads without logging in!"))
+        return redirect("/")
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
