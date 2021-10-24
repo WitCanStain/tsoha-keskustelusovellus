@@ -7,10 +7,10 @@
 {% if session.role == "admin" %}
 <form action="/create_category" method="POST">
     <p>Give the new category a name:</br>
-    <input type="text" name="name"></p>
+    <input class="btn btn-outline-primary btn-sm" type="text" name="name"></p>
     </br>
-    <input type="submit" value="Create category">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input class="btn btn-outline-primary btn-sm" type="submit" value="Create category">
+    <input class="btn btn-outline-primary btn-sm" type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 
     {% if users %}
     <p>You can optionally specify which users you want to have access to the new category. Hold CTRL or CMD to select multiple users.</p>

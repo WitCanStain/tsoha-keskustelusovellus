@@ -7,8 +7,10 @@ from string import ascii_lowercase
 allowed_chars = ascii_lowercase + 'åäö0123456789'
 
 def login(username, password):
-    print(f"Entered users:login({username}, {password}).")
+    print(f"Entered users:login({username}).")
     try:
+        if not username or not password:
+            return False
         hash_value = generate_password_hash(password)
         sql = "SELECT id, password, role FROM users WHERE username=:username"
         result = db.session.execute(sql, {"username":username})
@@ -17,7 +19,7 @@ def login(username, password):
             user_id = user[0]
             db_password = user[1]
             user_role = user[2]
-            if db_password and check_password_hash(hash_value, password):
+            if db_password and check_password_hash(hash_value, db_password):
                 session["csrf_token"] = secrets.token_hex(16)
                 session["username"] = username
                 session["user_id"] = user_id

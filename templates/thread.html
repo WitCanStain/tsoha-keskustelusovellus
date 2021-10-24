@@ -6,15 +6,15 @@
 
 {% if edit_thread %}
 <form action="/update_thread/{{ thread.id }}" method="POST">
-    <input type="text" name="new_title" value={{ thread.title }}></p>
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input class="btn btn-outline-primary btn-sm" type="text" name="new_title" value={{ thread.title }}></p>
+    <input class="btn btn-outline-primary btn-sm" type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 {% else %}
 <p>{{ thread.title }}</p>
 {% if session.user_id == thread.messages[0].user_id %}
     
-    <form action="/update_thread/{{ thread.id }}" method="GET"><input type="submit" value="Edit thread"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"> </form>
-    <form action="/remove_thread/{{ thread.id }}" method="POST"><input type="submit" value="Remove thread"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"> </form>
+    <form action="/update_thread/{{ thread.id }}" method="GET"><input class="btn btn-outline-primary btn-sm" type="submit" value="Edit thread"><input class="btn btn-outline-primary btn-sm" type="hidden" name="csrf_token" value="{{ session.csrf_token }}"> </form>
+    <form action="/remove_thread/{{ thread.id }}" method="POST"><input class="btn btn-outline-primary btn-sm" type="submit" value="Remove thread"><input class="btn btn-outline-primary btn-sm" type="hidden" name="csrf_token" value="{{ session.csrf_token }}"> </form>
     {% endif %}
 {% endif %}
 <ol>
@@ -24,17 +24,17 @@
     {{ message.username }}:
     <form action="/update_message/{{ message.id }}" method="POST">
         <textarea name="new_content" rows="{{ [message.content.count('\n'), 6] | max }}" cols="50">{{ message.content }}</textarea>
-        <input type="hidden" name="thread_id" value={{ thread.id }}>
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        <input type="submit" value="Edit message">
+        <input class="btn btn-outline-primary btn-sm" type="hidden" name="thread_id" value={{ thread.id }}>
+        <input class="btn btn-outline-primary btn-sm" type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input class="btn btn-outline-primary btn-sm" type="submit" value="Edit message">
     </form>
     
     {% else %}
     <section id="{{ message.id }}">
     {{ message.username }}:</br> {{ message.content | replace("\r", "</br>") | safe }}</br>
     {% if session.user_id == message.user_id and loop.index0 != 0 %}
-    <form action="/update_message/{{ message.id }}" method="GET"><input type="submit" value="Edit message"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"> </form>
-    <form action="/remove_message/{{ message.id }}" method="POST"><input type="submit" value="Remove message"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"> </form>
+    <form action="/update_message/{{ message.id }}" method="GET"><input class="btn btn-outline-primary btn-sm" type="submit" value="Edit message"><input class="btn btn-outline-primary btn-sm" type="hidden" name="csrf_token" value="{{ session.csrf_token }}"> </form>
+    <form action="/remove_message/{{ message.id }}" method="POST"><input class="btn btn-outline-primary btn-sm" type="submit" value="Remove message"><input class="btn btn-outline-primary btn-sm" type="hidden" name="csrf_token" value="{{ session.csrf_token }}"> </form>
     {% endif %}
     {% endif %}
 </li>
@@ -45,9 +45,9 @@
 <form action="/create_message" method="POST">
 <p>Write your message here:<br>
 <textarea name="message" rows="6" cols="50" id="new_post"></textarea>
-<input type="hidden" name="thread_id" value={{ thread.id }}>
-<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-<input type="submit" value="Post message">
+<input class="btn btn-outline-primary btn-sm" type="hidden" name="thread_id" value={{ thread.id }}>
+<input class="btn btn-outline-primary btn-sm" type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+<input class="btn btn-outline-primary btn-sm" type="submit" value="Post message">
 </form>
 {% endif %}
 {% endblock %}
