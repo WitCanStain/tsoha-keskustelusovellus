@@ -6,22 +6,20 @@ import messaging
 @app.route("/")
 def index():
     categories = messaging.get_categories()
-    print(session["role"])
     return render_template("index.html", categories=categories)
 
 @app.route("/login",methods=["POST"])
 def login():
     username = request.form["username"]
     password = request.form["password"]
-    user_id = users.login(username, password)
-    if user_id:
-        pass
+    if not users.login(username, password):
+        flash("Username or password is incorrect.")
+        
     return redirect("/")
 
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 def logout():
-    del session["username"]
-    del session["user_id"]
+    session.clear()
     return redirect("/")
 
 @app.route("/register", methods=["POST", "GET"])
@@ -33,6 +31,7 @@ def register():
         if  users.user_register(role, username, password):
             return redirect("/")
         else:
+            flash("user registration failed.")
             return redirect("/register")
     elif request.method == "GET":
         return render_template("register.html")    
@@ -52,8 +51,13 @@ def create_thread():
         else:
             return redirect("/create_thread")
     elif request.method == "GET":
-        categories = messaging.get_categories()
-        return render_template("create_thread.html", categories=categories)
+        category_id = int(request.args.get('category', None)) if request.args.get('category', None) else None
+        categories = None
+        if not category_id:
+            categories = messaging.get_categories()
+        else:
+            category = messaging.get_category(category_id)
+        return render_template("create_thread.html", categories=categories, category=category)
 
 @app.route("/create_message", methods=["POST"])
 def create_message():
@@ -109,11 +113,13 @@ def update_message(id):
         else:
             abort(404, description="Resource not found")
 
-@app.route("/remove_message/<int:id>", methods=["POST", "GET"])
+@app.route("/remove_message/<int:id>", methods=["POST"])
 def remove_message(id):
     if not (messaging.message_is_owned_by_user(id, session["user_id"])):
         flash("You cannot delete messages that are not yours.")
         return redirect("/")
+    if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
     thread_id = messaging.remove_message(id)
     if thread_id:
         return redirect(f"/thread/{thread_id}")
@@ -165,8 +171,6 @@ def remove_thread(id):
 def category(id):
     category = messaging.get_category(id)
     if category:
-        session["category_id"] = id
-        session["category_name"] = category["name"]
         return render_template("category.html", category=category)
     else:
         abort(404, description="Resource not found")

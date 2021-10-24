@@ -179,14 +179,18 @@ def get_categories():
 def get_category(category_id):
     print(f"Entered messaging:get_category({category_id}).")
     try:
-        if not user_has_category_access(category_id, session["user_id"]):
+        user_id = session["user_id"] if "user_id" in session else None
+        if not user_has_category_access(category_id, user_id):
             print("User does not have access to this category.")
             return False
         sql = "SELECT id, title FROM threads WHERE category_id=:category_id AND visible=true"
         threads = db.session.execute(sql, {"category_id": category_id}).fetchall()
-        sql = "SELECT name FROM categories WHERE id=:category_id"
-        category_name = db.session.execute(sql, {"category_id": category_id}).fetchone()[0]
-        return {"name": category_name, "threads": threads}
+        sql = "SELECT id, name FROM categories WHERE id=:category_id LIMIT 1"
+        result = db.session.execute(sql, {"category_id": category_id}).fetchone()
+        category_id = result[0]
+        category_name = result[1]
+        
+        return {"name": category_name, "id": category_id, "threads": threads}
         
     except:
         traceback.print_exc()
@@ -211,7 +215,10 @@ def remove_category(category_id):
 def user_has_category_access(category_id, user_id):
     print(f"Entered messaging:user_has_category_access({category_id}, {user_id}).")
     try:
-        sql = "SELECT id FROM categories WHERE id=:category_id AND (:user_id=ANY(whitelist) OR whitelist IS NULL)"
+        if not user_id:
+            sql = "SELECT id FROM categories WHERE id=:category_id AND whitelist IS NULL LIMIT 1"
+        else:
+            sql = "SELECT id FROM categories WHERE id=:category_id AND (:user_id=ANY(whitelist) OR whitelist IS NULL) LIMIT 1"
         result = db.session.execute(sql, {"category_id": category_id, "user_id": user_id}).fetchone()
         print(result)
         if result[0]:

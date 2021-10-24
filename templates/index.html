@@ -4,8 +4,8 @@
 {% if session.username %}
 <p>You have logged in as {{ session.username }}</p>
 
-<a href="/create_thread">Create thread</a></br>
-<a href="/logout">Kirjaudu ulos</a>
+<form action="/create_thread" method="GET"><input type="submit" value="Create thread"></form>
+<form action="/logout" method="POST"><input type="submit" value="Log out"></form>
 
 {% endif %}
 

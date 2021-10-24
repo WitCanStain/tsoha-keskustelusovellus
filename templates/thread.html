@@ -32,9 +32,9 @@
     {% else %}
     <section id="{{ message.id }}">
     {{ message.username }}:</br> {{ message.content | replace("\r", "</br>") | safe }}</br>
-    {% if session.user_id == message.user_id %}
-    <a href="/update_message/{{ message.id }}">Edit message</a>
-    <a href="/remove_message/{{ message.id }}">Remove message</a>
+    {% if session.user_id == message.user_id and loop.index0 != 0 %}
+    <form action="/update_message/{{ message.id }}" method="GET"><input type="submit" value="Edit message"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"> </form>
+    <form action="/remove_message/{{ message.id }}" method="POST"><input type="submit" value="Remove message"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"> </form>
     {% endif %}
     {% endif %}
 </li>

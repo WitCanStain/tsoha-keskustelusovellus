@@ -6,6 +6,6 @@
 {% for thread in category.threads %}
 <li><a href="/thread/{{ thread[0] }}">{{ thread[1] }}</a></li>
 {% endfor %}
-<form action="/create_thread" method="GET"><input type="submit" value="Create thread"> </form>
+<form action="/create_thread" method="GET"><input type="hidden" name="category" value={{ category.id }}><input type="submit" value="Create thread"></form>
 </ol>
 {% endblock %}
