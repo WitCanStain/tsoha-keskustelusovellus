@@ -6,8 +6,8 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 <style>
     body {
-      padding-top: 15px;
-      padding-left: 40px;
+        padding-top: 15px;
+        padding-left: 40px;
     }
 </style>
 <title>Keskustelusovellus - {% block title %}{% endblock %}</title>
@@ -16,48 +16,56 @@
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <div class="row">
-        <ul class=flashes>
-            {% for message in messages %}
-            <div class="alert alert-warning" role="alert">
-                <li>{{ message }}</li>
-            </div>
+        <div class="d-flex justify-content-between">
+            <ul class=flashes>
+                {% for message in messages %}
+                <div class="alert alert-warning" role="alert">
+                    <li>{{ message }}</li>
+                </div>
 
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-    {% endwith %}
+                {% endfor %}
+            </ul>
 
-    <div class="row">
-        <div class="col-sm">
-            <a class="btn btn-primary float-right" href="/">Etusivu</a>
-        </div>
-        {% if not session.user_id %}
-        <form action="/login" method="POST">
-            
-                Username: <input class="btn btn-outline-primary btn-sm" class="btn btn-outline-primary btn-sm" type="text" name="username">
-            
-            
-                password: <input class="btn btn-outline-primary btn-sm" class="btn btn-outline-primary btn-sm" type="password" name="password"> <input class="btn btn-outline-primary btn-sm"
-                    type="submit" value="Log in">
+            {% endif %}
+            {% endwith %}
 
-                    
+            <div class="row">
+                <div class="col-sm">
+                    <a class="btn btn-primary float-right" href="/">Etusivu</a>
+                </div>
+                {% if not session.user_id %}
+                <form action="/login" method="POST">
 
-        </form>
-        <form action="/register" method="GET"><input class="btn btn-outline-primary btn-sm" type="submit" value="Register"></form>
+                    Username: <input class="btn btn-outline-primary btn-sm" class="btn btn-outline-primary btn-sm"
+                        type="text" name="username">
 
-        {% endif %} </br>
-        <div class="col-sm">
-            <div class="float-right">
-                <form action="/search" method="POST">
-                    <input class="btn btn-outline-primary btn-sm" type="text" name="search_query" placeholder="Search"></p>
+
+                    password: <input class="btn btn-outline-primary btn-sm" class="btn btn-outline-primary btn-sm"
+                        type="password" name="password"> <input class="btn btn-outline-primary btn-sm" type="submit"
+                        value="Log in">
+
+
+
                 </form>
+                <form action="/register" method="GET"><input class="btn btn-outline-primary btn-sm" type="submit"
+                        value="Register"></form>
+
+                {% endif %} </br>
+                <div class="col-sm">
+                    <span class="float-sm-right">
+                        <form action="/search" method="POST">
+                            <input class="btn btn-outline-primary btn-sm" type="text" name="search_query"
+                                placeholder="Search">
+                            </p>
+                        </form>
+                    </span>
+
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<hr>
-{% block content %}{% endblock %}
-<hr>
+    <hr>
+    {% block content %}{% endblock %}
+    <hr>
 </div>
