@@ -1,6 +1,5 @@
 from db import db
 from flask import session, flash, escape
-from time import time
 import traceback
 
 def create_thread(title, message, category_id):
@@ -9,7 +8,6 @@ def create_thread(title, message, category_id):
         if message:
             title = escape(title)
             user_id = session["user_id"]
-            created = time()
             sql = "INSERT INTO threads (title, category_id, created_by) VALUES (:title, :category_id, :created_by) RETURNING id"
             result = db.session.execute(sql, {"title": title, "category_id": category_id, "created_by": user_id})
             thread_id = result.fetchone()[0]
