@@ -159,16 +159,28 @@ def get_categories():
     try:
         user_id = session["user_id"] if "user_id" in session else None
         print(user_id)
-        sql = """
-        SELECT categories.id, categories.name, COUNT(DISTINCT threads.id) AS thread_count, COUNT(messages.id) AS msg_count, SUBSTR(MAX(messages.created)::TEXT, 1, 19) AS last_msg_time
-        FROM categories 
-        LEFT JOIN threads 
-        ON categories.id=threads.category_id AND threads.visible=true
-        LEFT JOIN messages 
-        ON messages.thread_id=threads.id AND messages.visible=true
-        WHERE categories.visible=true AND (:user_id = ANY(whitelist) OR whitelist IS NULL)
-        GROUP BY categories.id
-        """
+        if session["role"] == "admin":
+            sql =  """
+            SELECT categories.id, categories.name, COUNT(DISTINCT threads.id) AS thread_count, COUNT(messages.id) AS msg_count, SUBSTR(MAX(messages.created)::TEXT, 1, 19) AS last_msg_time
+            FROM categories 
+            LEFT JOIN threads 
+            ON categories.id=threads.category_id AND threads.visible=true
+            LEFT JOIN messages 
+            ON messages.thread_id=threads.id AND messages.visible=true
+            WHERE categories.visible=true
+            GROUP BY categories.id
+            """
+        else:
+            sql = """
+            SELECT categories.id, categories.name, COUNT(DISTINCT threads.id) AS thread_count, COUNT(messages.id) AS msg_count, SUBSTR(MAX(messages.created)::TEXT, 1, 19) AS last_msg_time
+            FROM categories 
+            LEFT JOIN threads 
+            ON categories.id=threads.category_id AND threads.visible=true
+            LEFT JOIN messages 
+            ON messages.thread_id=threads.id AND messages.visible=true
+            WHERE categories.visible=true AND (:user_id = ANY(whitelist) OR whitelist IS NULL)
+            GROUP BY categories.id
+            """
         categories = db.session.execute(sql, {"user_id": user_id}).fetchall()
         print(categories)
         return categories
@@ -215,13 +227,14 @@ def remove_category(category_id):
 def user_has_category_access(category_id, user_id):
     print(f"Entered messaging:user_has_category_access({category_id}, {user_id}).")
     try:
+        if session["role"] == "admin":
+            return True
         if not user_id:
             sql = "SELECT id FROM categories WHERE id=:category_id AND whitelist IS NULL LIMIT 1"
         else:
             sql = "SELECT id FROM categories WHERE id=:category_id AND (:user_id=ANY(whitelist) OR whitelist IS NULL) LIMIT 1"
         result = db.session.execute(sql, {"category_id": category_id, "user_id": user_id}).fetchone()
-        print(result)
-        if result[0]:
+        if result:
             return True
         else:
             return False
