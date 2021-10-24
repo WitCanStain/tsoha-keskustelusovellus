@@ -1,5 +1,5 @@
 from db import db
-from flask import session, flash
+from flask import session, flash, escape
 from time import time
 
 def create_thread(title, message, category_id):
@@ -44,6 +44,7 @@ def get_thread(thread_id):
         sql = "SELECT user_id, content, username, messages.id FROM messages LEFT JOIN users ON user_id=users.id WHERE thread_id=:thread_id ORDER BY messages.id ASC"
         result = db.session.execute(sql, {"thread_id": thread_id})
         messages = result.fetchall()
+        
         return {"id":thread_id, "title": title, "messages": messages}
     except Exception as e:
         print(e)
@@ -63,6 +64,8 @@ def create_message(thread_id, user_id, content):
     print(f"Entered messaging:create_message({thread_id}, {user_id}, {content}).")
     try:
         if content:
+            content = escape(content) # sanitize input
+            print(f"escaped message: {content}")
             sql = "INSERT INTO messages (content, thread_id, user_id) VALUES (:content, :thread_id, :user_id) RETURNING id"
             message_id = db.session.execute(sql, {"content": content, "thread_id": thread_id, "user_id": user_id}).fetchone()[0]
             db.session.commit()

@@ -3,6 +3,7 @@
 {% block content %}
 <a href="/category/{{ session.category_id }}">{{ session.category_name }}</a></br>
 
+
 {% if edit_thread %}
 <form action="/update_thread/{{ thread.id }}" method="POST">
     <input type="text" name="new_title" value={{ thread.title }}></p>
@@ -25,7 +26,8 @@
     </form>
     
     {% else %}
-    {{ message.username }}: {{ message.content }}</br>
+    <section id="{{ message.id }}">
+    {{ message.username }}:</br> {{ message.content | replace("\r", "</br>") | safe }}</br>
     {% if session.user_id == message.user_id %}
     <a href="/update_message/{{ message.id }}">Edit message</a>
     {% endif %}
@@ -37,7 +39,7 @@
 {% if session.username %}
 <form action="/create_message" method="POST">
 <p>Write your message here:<br>
-<textarea name="message" rows="6" cols="50"></textarea>
+<textarea name="message" rows="6" cols="50" id="new_post"></textarea>
 <input type="hidden" name="thread_id" value={{ thread.id }}>
 <input type="submit" value="Post message">
 </form>

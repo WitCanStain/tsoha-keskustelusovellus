@@ -75,7 +75,7 @@ def create_category():
 
 @app.route("/update_message/<int:id>", methods=["POST", "GET"])
 def update_message(id):
-    if (message_is_owned_by_user(id, session["user_id"])):
+    if (messaging.message_is_owned_by_user(id, session["user_id"])):
         if request.method == "POST":
             new_content = request.form["new_content"]
             thread_id = request.form["thread_id"]
@@ -92,9 +92,10 @@ def update_message(id):
 def thread(id):
     edit_message = int(request.args.get('edit', None)) if request.args.get('edit', None) else None
     edit_thread = int(request.args.get('editthread', None)) if request.args.get('editthread', None) else None
+    message_id = int(request.args.get('message', None)) if request.args.get('message', None) else None
     thread = messaging.get_thread(id)
     if thread:
-        return render_template("thread.html", thread=thread, edit_message=edit_message, edit_thread=edit_thread)
+        return render_template("thread.html", thread=thread, edit_message=edit_message, edit_thread=edit_thread, message_id=message_id)
     else:
         return "Thread could not be found."
 
