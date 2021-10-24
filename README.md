@@ -15,4 +15,4 @@ Tämä tietokantasovellus-kurssin projekti on keskustelusovellus. Idea on saatu 
 Sovelluksen käyttäjätyyppeihin lukeutuvat peruskäyttäjä sekä ylläpitäjä. Mahdollisia kehitysideoita ovat mm. moderaattori-käyttäjä, jolla on oikeudet tietyille keskustelualueille mutta ei toisille, ilmoitustoiminto jolla käyttäjä saa ilmoituksen kun hänen tilaamaansa ketjuun tulee uusi viesti, sekä blokkaus-toiminto, jolla käyttäjä voi estää tietyn toisen käyttäjän viestien näkymisen itselleen.
 
 
-Tällä hetkellä kaikki ylläolevista ominaisuuksista ovat toiminnassa. Ulkoasussa on vielä puutteita, mutta perustoiminnallisuus on vakaata.
+Tällä hetkellä kaikki ylläolevista olennaisista ominaisuuksista ovat toiminnassa. Ulkoasussa on vielä puutteita, mutta perustoiminnallisuus on vakaata.
