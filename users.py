@@ -7,26 +7,28 @@ from string import ascii_lowercase
 allowed_chars = ascii_lowercase + 'åäö0123456789'
 
 def login(username, password):
-    print(f"Entered users:login({username}).")
+    print(f"Entered users:login({username}, {password}).")
     try:
         if not username or not password:
             return False
-        hash_value = generate_password_hash(password)
         sql = "SELECT id, password, role FROM users WHERE username=:username"
         result = db.session.execute(sql, {"username":username})
         user = result.fetchone()
+        print(user)
         if user:
             user_id = user[0]
             db_password = user[1]
             user_role = user[2]
-            if db_password and check_password_hash(hash_value, db_password):
+            print(f"db_pass: {db_password}")
+            
+            if db_password and check_password_hash(db_password, password):
                 session["csrf_token"] = secrets.token_hex(16)
                 session["username"] = username
                 session["user_id"] = user_id
                 session["role"] = user_role
                 return user_id
-        else:
-            return False
+        
+        return False
     except:
         traceback.print_exc()
         return False
@@ -36,8 +38,8 @@ def user_register(role, username, password):
     try:
         hash_value = generate_password_hash(password)
         if check_registration_validity(role, username, password):
-            sql = "INSERT INTO users (role, username, password, visible) VALUES (:role, :username, :password, :visible) RETURNING id"
-            result = db.session.execute(sql, {"role":role if role else "user", "username":username, "password":hash_value, "visible":True})
+            sql = "INSERT INTO users (role, username, password) VALUES (:role, :username, :password) RETURNING id"
+            result = db.session.execute(sql, {"role":role if role else "user", "username":username, "password":hash_value})
             user_id = result.fetchone()[0]
             db.session.commit()
             session["username"] = username

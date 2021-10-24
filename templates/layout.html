@@ -7,6 +7,7 @@
 <style>
     body {
       padding-top: 15px;
+      padding-left: 40px;
     }
 </style>
 <title>Keskustelusovellus - {% block title %}{% endblock %}</title>
@@ -40,7 +41,10 @@
                 password: <input class="btn btn-outline-primary btn-sm" class="btn btn-outline-primary btn-sm" type="password" name="password"> <input class="btn btn-outline-primary btn-sm"
                     type="submit" value="Log in">
 
+                    
+
         </form>
+        <form action="/register" method="GET"><input class="btn btn-outline-primary btn-sm" type="submit" value="Register"></form>
 
         {% endif %} </br>
         <div class="col-sm">

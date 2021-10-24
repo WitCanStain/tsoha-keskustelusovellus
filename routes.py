@@ -55,6 +55,7 @@ def create_thread():
         categories = None
         if not category_id:
             categories = messaging.get_categories()
+            category = None
         else:
             category = messaging.get_category(category_id)
         return render_template("create_thread.html", categories=categories, category=category)
