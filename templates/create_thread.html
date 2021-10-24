@@ -7,6 +7,7 @@
 
 <p>What do you want to say?</br>
 <input type="text" name="message"></p>
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 {% if session.category_id %}
 <p>Creating thread in <a href="/categories/{{ session.category_id }}">{{ session.category_name }}</a></p>
 <input type="hidden" name="category" value={{ session.category_id }}>

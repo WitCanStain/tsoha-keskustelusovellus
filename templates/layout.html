@@ -10,6 +10,11 @@
   {% endif %}
 {% endwith %}
 <a href="/">Etusivu</a> 
+{% if not session.user_id %}
+<form action="/login" method="POST">
+    <p>Username: <input type="text" name="username"></p> <p>password: <input type="password" name="password"></p> <input type="submit" value="Log in">
+    </form>
+{% endif %} </br>
 <form action="/search" method="POST">
     <input type="text" name="search_query" placeholder="Search"></p>
 </form>

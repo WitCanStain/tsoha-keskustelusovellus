@@ -6,19 +6,7 @@
 
 <a href="/create_thread">Create thread</a></br>
 <a href="/logout">Kirjaudu ulos</a>
-{% else %}
-<form action="/login" method="POST">
-<p>Username:<br>
-<input type="text" name="username"></p>
-<p>password:<br>
-<input type="password" name="password"></p>
-<input type="submit" value="Log in">
-</form>
 
-<form action="/register" method="GET">
-
-<input type="submit" value="Register">
-</form>
 {% endif %}
 
 <ol>

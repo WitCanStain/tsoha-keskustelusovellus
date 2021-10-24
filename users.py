@@ -2,6 +2,7 @@ from db import db
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import session, flash
 import traceback
+import secrets
 from string import ascii_lowercase
 allowed_chars = ascii_lowercase + 'åäö0123456789'
 
@@ -17,6 +18,9 @@ def login(username, password):
             db_password = user[1]
             user_id = user[0]
             if db_password and check_password_hash(hash_value, password):
+                session["csrf_token"] = secrets.token_hex(16)
+                session["username"] = username
+                session["user_id"] = user_id
                 return user_id
         else:
             flash("Username or password is incorrect.")

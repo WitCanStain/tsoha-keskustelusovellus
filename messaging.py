@@ -157,7 +157,7 @@ def create_category(category_name, whitelist):
 def get_categories():
     print("Entered messaging:get_categories().")
     try:
-        user_id = session["user_id"]
+        user_id = session["user_id"] if "user_id" in session else None
         print(user_id)
         sql = """
         SELECT categories.id, categories.name, COUNT(DISTINCT threads.id) AS thread_count, COUNT(messages.id) AS msg_count, SUBSTR(MAX(messages.created)::TEXT, 1, 19) AS last_msg_time

@@ -15,8 +15,7 @@ def login():
     password = request.form["password"]
     user_id = users.login(username, password)
     if user_id:
-        session["username"] = username
-        session["user_id"] = user_id
+        pass
     return redirect("/")
 
 @app.route("/logout")
@@ -41,6 +40,8 @@ def register():
 @app.route("/create_thread", methods=["POST", "GET"])
 def create_thread():
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         title = request.form["title"]
         message = request.form["message"]
         category_id = request.form["category"]
@@ -56,6 +57,8 @@ def create_thread():
 
 @app.route("/create_message", methods=["POST"])
 def create_message():
+    if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
     message = request.form["message"]
     thread_id = request.form["thread_id"]
     user_id = session["user_id"]
@@ -74,9 +77,10 @@ def create_category():
         abort(401, description="Unauthorized request.")
     if request.method == "GET":
         user_list = get_users()
-        
         return render_template("create_category.html", users=user_list)
     elif request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         category_name = request.form["name"]
         users = request.form.getlist("users")
         category_id = messaging.create_category(category_name, users)
@@ -90,6 +94,8 @@ def create_category():
 def update_message(id):
     if (messaging.message_is_owned_by_user(id, session["user_id"])):
         if request.method == "POST":
+            if session["csrf_token"] != request.form["csrf_token"]:
+                abort(403)
             new_content = request.form["new_content"]
             thread_id = request.form["thread_id"]
             messaging.update_message(id, new_content)
@@ -127,13 +133,15 @@ def update_thread(id):
     if request.method == "GET":
         return redirect(f"/thread/{id}?editthread={id}")
     elif request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         new_title = request.form["new_title"]
         if messaging.update_thread(id, new_title):
             return redirect(f"/thread/{id}")
         else:
             return redirect(f"/update_thread/{id}")
 
-@app.route("/remove_thread/<int:id>", methods=["POST", "GET"])
+@app.route("/remove_thread/<int:id>", methods=["POST"])
 def remove_thread(id):
     category_id = messaging.remove_thread(id)
     if category_id:
@@ -154,6 +162,8 @@ def category(id):
         
 @app.route("/remove_category/<int:id>", methods=["POST"])
 def remove_category(id):
+    if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
     result = messaging.remove_category(id)
     if not result:
         flash("Removing category failed.")

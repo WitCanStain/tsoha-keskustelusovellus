@@ -7,12 +7,14 @@
 {% if edit_thread %}
 <form action="/update_thread/{{ thread.id }}" method="POST">
     <input type="text" name="new_title" value={{ thread.title }}></p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 {% else %}
 <p>{{ thread.title }}</p>
 {% if session.user_id == thread.messages[0].user_id %}
-    <a href="/update_thread/{{ thread.id }}">Edit thread</a>
-    <a href="/remove_thread/{{ thread.id }}">Remove thread</a>
+    
+    <form action="/update_thread/{{ thread.id }}" method="GET"><input type="submit" value="Edit thread"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"> </form>
+    <form action="/remove_thread/{{ thread.id }}" method="POST"><input type="submit" value="Remove thread"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"> </form>
     {% endif %}
 {% endif %}
 <ol>
@@ -23,6 +25,7 @@
     <form action="/update_message/{{ message.id }}" method="POST">
         <textarea name="new_content" rows="{{ [message.content.count('\n'), 6] | max }}" cols="50">{{ message.content }}</textarea>
         <input type="hidden" name="thread_id" value={{ thread.id }}>
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         <input type="submit" value="Edit message">
     </form>
     
@@ -43,6 +46,7 @@
 <p>Write your message here:<br>
 <textarea name="message" rows="6" cols="50" id="new_post"></textarea>
 <input type="hidden" name="thread_id" value={{ thread.id }}>
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 <input type="submit" value="Post message">
 </form>
 {% endif %}
