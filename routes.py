@@ -29,6 +29,7 @@ def register():
         password = request.form["password"]
         role = request.form["role"]
         if  users.user_register(role, username, password):
+            users.login(username, password)
             return redirect("/")
         else:
             flash("user registration failed.")
